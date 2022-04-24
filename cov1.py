@@ -1,19 +1,16 @@
 import requests
 import json
-import sqlite3
-import pymysql
-import sys
-import xlwings as xw
-import numpy as np
-import pandas as pd
-import os
-from flask import Flask
-import matplotlib.pyplot as plt
 from pyecharts import options as opts
 from pyecharts.charts import Map
 from pyecharts.charts import Line
 from pyecharts.charts import Bar
 
+class Data:
+    def __init__(self, today_confirm, total_confirm, total_dead, total_heal):
+        self.today_confirm = today_confirm
+        self.total_confirm = total_confirm
+        self.total_dead = total_dead
+        self.total_heal = total_heal
 
 def get_data_global():
     url = 'https://c.m.163.com/ug/api/wuhan/app/data/list-total?t=329822670771'
@@ -128,9 +125,6 @@ def data_global_pic(glo):
         .add_yaxis("累计死亡", total_dead)
         .add_yaxis("累计治愈", total_heal)
     ).render("global_covid.html")
-    #plt.bar(x, today_confirm, tick_label=country)
-    #plt.show()
-    #wb.save('global_covid.xlsx')
 
 
 def data_china_pic(chi):
@@ -173,11 +167,6 @@ def data_china_pic(chi):
                    is_smooth=True)
         .set_global_opts(title_opts=opts.TitleOpts(title="当日确诊图"))
     ).render("total_confirm_china.html")
-    #plt.plot(x, today_confirm)
-    #plt.savefig("today_confirm_china.jpg")
-    #plt.close()
-    #plt.plot(x, total_confirm, x, total_dead, x, total_heal)
-    #plt.savefig("confirm_china.jpg")
 
 
 def data_province_pic_total(pro):
@@ -338,41 +327,3 @@ def data_city_pic_today(cit, pro_name):
             )
         ).render("today_confirm_city.html")
     )
-
-chi = get_data_city()
-data_province_pic_total(chi)
-"""def get_conn():
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="root", db="covid", charset="utf8")
-    cursor = conn.cursor()
-    return conn, cursor
-
-
-def close_conn(conn, cursor):
-    if cursor:
-        cursor.close()
-    if conn:
-        conn.close()"""
-
-
-"""def get_database():
-    dic_global = get_data_global()
-    conn, cursor = get_conn()"""
-
-    #cursor.execute('''CREATE TABLE DATA_GLOBAL
-        #(ID INT PRIMARY KEY, DATE TEXT, COUNTRY TEXT, TODAY_CONFIRM TEXT, TOTAL_CONFIRM TEXT,
-            #TOTAL_DEAD TEXT, TOTAL_HEAL TEXT)''')"""
-    #"""sql = "INSERT INTO GLOBAL \
-                  #(DATE, COUNTRY, TODAY_CONFIRM, TOTAL_CONFIRM, TOTAL_DEAD, TOTAL_HEAL)\
-                    #VALUES (%s, %s, %s, %s, %s, %s);" \
-          #% (dic_global[k].get('date'), dic_global[k].get('country'), dic_global[k].get('today confirm'),
-             #dic_global[k].get('total confirm'),
-             #dic_global[k].get('total dead'), dic_global[k].get('total heal'))"""
-    #"""sql = "insert into DATA_GLOBAL(date_g,country,today_confirm,total_confirm," \
-          #"total_dead,total_heal) values(%s,%s,%s,%s,%s,%s)"
-    #for k in dic_global:
-        #cursor.execute(sql, k)
-        #conn.commit()
-    #close_conn(conn, cursor)
-
-
-#get_database()"""

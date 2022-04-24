@@ -2,11 +2,7 @@ from flask import Flask
 from flask import render_template
 import cov1
 
-
 app = Flask(__name__, template_folder='.')
-
-glo = cov1.get_data_global()
-#cov1.data_global_pic(glo)
 
 @app.route('/')
 def index():
@@ -43,7 +39,7 @@ def data_china_today():
     cov1.data_china_pic(info)
     return render_template("today_confirm_china.html")
 
-@app.route('/china/today')
+@app.route('/china/total')
 def data_china_total():
     info = cov1.get_data_china()
     cov1.data_china_pic(info)
@@ -55,6 +51,14 @@ def data_province():
     return {
         "msg": "success",
         "data": info_province
+    }
+
+@app.route('/city')
+def data_city():
+    info_city, info_province = cov1.get_data_city()
+    return {
+        "msg": "success",
+        "data": info_city
     }
 
 @app.route('/province/total')
