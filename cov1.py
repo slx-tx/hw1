@@ -106,22 +106,12 @@ def get_data_city():
 
 def data_global_pic(glo):
     num_global = len(glo)
-    x = np.arange(num_global)
     date = []
     country = []
     today_confirm = []
     total_confirm = []
     total_dead = []
     total_heal = []
-    wb = xw.Book()
-    sht = wb.sheets('sheet1')
-    sht.range(f'A1').value = '编号'
-    sht.range(f'B1').value = '地区'
-    sht.range(f'C1').value = '新增确诊'
-    sht.range(f'D1').value = '累计确诊'
-    sht.range(f'E1').value = '死亡'
-    sht.range(f'F1').value = '治愈'
-    sht.range(f'G1').value = '更新日期'
     for k in enumerate(glo):
         date.append(k[1].get('date'))
         country.append(k[1].get('country'))
@@ -129,22 +119,21 @@ def data_global_pic(glo):
         total_confirm.append(int(k[1].get('total confirm')))
         total_dead.append(int(k[1].get('total dead')))
         total_heal.append(int(k[1].get('total heal')))
-    for i in range(num_global):
-        sht.range(f'A{i + 2}').value = i + 1
-        sht.range(f'B{i + 2}').value = country[i]
-        sht.range(f'C{i + 2}').value = today_confirm[i]
-        sht.range(f'D{i + 2}').value = total_confirm[i]
-        sht.range(f'E{i + 2}').value = total_dead[i]
-        sht.range(f'F{i + 2}').value = total_heal[i]
-        sht.range(f'G{i + 2}').value = date[i]
+    bar = (
+        Bar(init_opts=opts.InitOpts(width="50000px",
+                                    height="700px"))
+        .add_xaxis(country)
+        .add_yaxis("当日确诊", today_confirm)
+        .add_yaxis("累计确诊", total_confirm)
+        .add_yaxis("累计死亡", total_dead)
+        .add_yaxis("累计治愈", total_heal)
+    ).render("global_covid.html")
     #plt.bar(x, today_confirm, tick_label=country)
     #plt.show()
-    wb.save('global_covid.xlsx')
+    #wb.save('global_covid.xlsx')
 
 
 def data_china_pic(chi):
-    num_global = len(chi)
-    x = np.arange(num_global)
     date = []
     today_confirm = []
     total_confirm = []
@@ -156,11 +145,39 @@ def data_china_pic(chi):
         total_confirm.append(int(k[1].get('total confirm')))
         total_dead.append(int(k[1].get('total dead')))
         total_heal.append(int(k[1].get('total heal')))
-    plt.plot(x, today_confirm)
-    plt.savefig("today_confirm_china.jpg")
-    plt.close()
-    plt.plot(x, total_confirm, x, total_dead, x, total_heal)
-    plt.savefig("confirm_china.jpg")
+    line1 = (
+        Line(
+            init_opts=opts.InitOpts(width="3500px",
+                                    height="700px")
+        )
+        .add_xaxis(xaxis_data=date)
+        .add_yaxis(series_name="当日确诊",
+                   y_axis=today_confirm,
+                   is_smooth=True)
+        .set_global_opts(title_opts=opts.TitleOpts(title="当日确诊图"))
+    ).render("today_confirm_china.html")
+    line2 = (
+        Line(
+            init_opts=opts.InitOpts(width="3500px",
+                                    height="700px")
+        )
+        .add_xaxis(xaxis_data=date)
+        .add_yaxis(series_name="累计确诊",
+                   y_axis=total_confirm,
+                   is_smooth=True)
+        .add_yaxis(series_name="累计死亡",
+                   y_axis=total_dead,
+                   is_smooth=True)
+        .add_yaxis(series_name="累计治愈",
+                   y_axis=total_heal,
+                   is_smooth=True)
+        .set_global_opts(title_opts=opts.TitleOpts(title="当日确诊图"))
+    ).render("total_confirm_china.html")
+    #plt.plot(x, today_confirm)
+    #plt.savefig("today_confirm_china.jpg")
+    #plt.close()
+    #plt.plot(x, total_confirm, x, total_dead, x, total_heal)
+    #plt.savefig("confirm_china.jpg")
 
 
 def data_province_pic_total(pro):
@@ -178,7 +195,9 @@ def data_province_pic_total(pro):
         total_confirm_p = k[1].get('total confirm')
         total_confirm.append((province_name, total_confirm_p))
     (
-        Map().add(
+        Map(init_opts=opts.InitOpts(width="1500px",
+                                    height="700px"))
+            .add(
             series_name="累计确诊",
             data_pair=total_confirm,
             maptype="china",
@@ -212,7 +231,9 @@ def data_province_pic_today(pro):
         today_confirm_p = k[1].get('today confirm')
         today_confirm.append((province_name, today_confirm_p))
     (
-        Map().add(
+        Map(init_opts=opts.InitOpts(width="1500px",
+                                    height="700px"))
+            .add(
             series_name="当日确诊",
             data_pair=today_confirm,
             maptype="china",
@@ -254,7 +275,9 @@ def data_city_pic_total(cit, pro_name):
         if province_name == pro_name:
             total_confirm.append((city_name, total_confirm_c))
     (
-        Map().add(
+        Map(init_opts=opts.InitOpts(width="1500px",
+                                    height="700px"))
+            .add(
             series_name="累计确诊",
             data_pair=total_confirm,
             maptype=pro_name,
@@ -296,7 +319,9 @@ def data_city_pic_today(cit, pro_name):
         if province_name == pro_name:
             today_confirm.append((city_name, today_confirm_c))
     (
-        Map().add(
+        Map(init_opts=opts.InitOpts(width="1500px",
+                                    height="700px"))
+            .add(
             series_name="当日确诊",
             data_pair=today_confirm,
             maptype=pro_name,
@@ -314,8 +339,8 @@ def data_city_pic_today(cit, pro_name):
         ).render("today_confirm_city.html")
     )
 
-cit, pro = get_data_city()
-data_province_pic_total(pro)
+chi = get_data_city()
+data_province_pic_total(chi)
 """def get_conn():
     conn = pymysql.connect(host="127.0.0.1", user="root", password="root", db="covid", charset="utf8")
     cursor = conn.cursor()

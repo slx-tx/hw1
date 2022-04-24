@@ -1,7 +1,6 @@
 from flask import Flask
 from flask import render_template
 import cov1
-import matplotlib as plt
 
 
 app = Flask(__name__, template_folder='.')
@@ -24,6 +23,12 @@ def data_global():
         "data": info
     }
 
+@app.route('/global/total')
+def data_global_total():
+    info = cov1.get_data_global()
+    cov1.data_global_pic(info)
+    return render_template("global_covid.html")
+
 @app.route('/china')
 def data_china():
     info = cov1.get_data_china()
@@ -32,13 +37,17 @@ def data_china():
         "data": info
     }
 
-@app.route('/city')
-def data_city():
-    info_city, info_province = cov1.get_data_city()
-    return {
-        "msg": "success",
-        "data": info_city
-    }
+@app.route('/china/today')
+def data_china_today():
+    info = cov1.get_data_china()
+    cov1.data_china_pic(info)
+    return render_template("today_confirm_china.html")
+
+@app.route('/china/today')
+def data_china_total():
+    info = cov1.get_data_china()
+    cov1.data_china_pic(info)
+    return render_template("total_confirm_china.html")
 
 @app.route('/province')
 def data_province():
