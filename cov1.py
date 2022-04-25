@@ -6,11 +6,16 @@ from pyecharts.charts import Line
 from pyecharts.charts import Bar
 
 class Data:
-    def __init__(self, today_confirm, total_confirm, total_dead, total_heal):
+    def __init__(self, name, date, today_confirm, total_confirm, total_dead, total_heal):
+        self.name = name
         self.today_confirm = today_confirm
         self.total_confirm = total_confirm
         self.total_dead = total_dead
         self.total_heal = total_heal
+        self.date = date
+    def write(self):
+        print("\n%s:\n当日确诊: %s\n累计确诊: %s\n累计死亡: %s\n累计治愈: %s\n更新日期: %s\n"
+              % (self.name, self.today_confirm, self.total_confirm, self.total_dead, self.total_heal, self.date))
 
 def get_data_global():
     url = 'https://c.m.163.com/ug/api/wuhan/app/data/list-total?t=329822670771'
@@ -32,6 +37,8 @@ def get_data_global():
         total_heal_g = json.dumps(earth_data_g['total']['heal'])
         dic_g = {'date': date_g, 'country': name_g, 'today confirm': today_confirm_g, 'total confirm': total_confirm_g,
                 'total dead': total_dead_g, 'total heal': total_heal_g}
+        country = Data(name_g, date_g, today_confirm_g, total_confirm_g, total_dead_g, total_heal_g)
+        country.write()
         glo.append(dic_g)
 
     return glo
@@ -54,6 +61,8 @@ def get_data_china():
         total_heal_c = json.dumps(earth_data_c['total']['heal'])
         dic_c = {'date': date_c, 'today confirm': today_confirm_c, 'total confirm': total_confirm_c,
                 'total dead': total_dead_c, 'total heal': total_heal_c}
+        china = Data("中国", date_c, today_confirm_c, total_confirm_c, total_dead_c, total_heal_c)
+        china.write()
         chi.append(dic_c)
 
     return chi
@@ -96,6 +105,9 @@ def get_data_city():
                              'date': date_pro, 'today confirm': province_today_confirm,
                              'total confirm': province_total_confirm, 'total dead': province_dead,
                              'total heal': province_heal}
+                country = Data(province_name, date_pro, province_today_confirm,
+                               province_total_confirm, province_dead, province_heal)
+                country.write()
                 pro.append(dic_pro)
 
     return cit, pro
